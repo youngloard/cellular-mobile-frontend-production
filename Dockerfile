@@ -1,29 +1,27 @@
-# Frontend Dockerfile for Next.js Application
-# Image name: cellular_mobile_frontend
-# 
-# Build locally first: npm run build
-# Then build Docker image: docker build -t cellular_mobile_frontend .
+# Frontend Dockerfile for Next.js Application (standalone output)
 
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
 WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
 
-# Set production environment
+COPY package.json package-lock.json* ./
+RUN npm ci --legacy-peer-deps
+
+COPY . .
+RUN npm run build
+
+FROM node:20-alpine AS runner
+
+WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copy package files and install production dependencies only
-COPY package.json package-lock.json* ./
-RUN npm ci --only=production --legacy-peer-deps
-
-# Copy the pre-built standalone application
-COPY .next/standalone ./
-COPY .next/static ./.next/static
-COPY public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+COPY --from=builder /app/public ./public
 
 EXPOSE 3000
-
-# Start the application using standalone server
 CMD ["node", "server.js"]
