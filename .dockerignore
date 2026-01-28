@@ -20,14 +20,7 @@ npm-debug.log*
 *.swp
 *.swo
 
-# Source files not needed in production image
-src/
-*.ts
-*.tsx
-*.md
-tsconfig.json
-tailwind.config.*
-postcss.config.*
-next.config.js
-.eslintrc.*
-scripts/
+# Build outputs (generated)
+.next/
+out/
+dist/
