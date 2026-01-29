@@ -15,7 +15,15 @@ const nextConfig = {
     // webpackBuildWorker: false,
   },
   env: {
-    NEXT_PUBLIC_API_URL: 'https://cellular-mobile-backened-production.up.railway.app/api',
+    NEXT_PUBLIC_API_URL: '/api',
+  },
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: 'https://cellular-mobile-backened-production.up.railway.app/api/:path*',
+      },
+    ]
   },
 
 }
