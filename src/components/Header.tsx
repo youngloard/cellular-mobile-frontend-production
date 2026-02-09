@@ -15,7 +15,20 @@ export default function Header() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const normalizeRole = (role: unknown): string => {
+    if (!role) return '';
+    if (typeof role === 'string') {
+      const normalized = role.trim().toLowerCase().replace(/[-\s]+/g, '_');
+      return normalized === 'superadmin' ? 'super_admin' : normalized;
+    }
+    if (typeof role === 'object') {
+      const roleObj = role as { name?: string; value?: string; slug?: string };
+      return normalizeRole(roleObj.value ?? roleObj.slug ?? roleObj.name ?? '');
+    }
+    return '';
+  };
+  const userRole = normalizeRole(user?.role);
+  const isAdmin = userRole === 'admin' || userRole === 'super_admin';
 
   useEffect(() => {
     fetchUnreadCount();

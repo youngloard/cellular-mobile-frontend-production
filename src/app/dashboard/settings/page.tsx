@@ -21,7 +21,20 @@ const buildMediaUrl = (path?: string | null) => {
 
 export default function SettingsPage() {
   const { user } = useAuth();
-  const isAdmin = user?.role === 'admin' || user?.role === 'super_admin';
+  const normalizeRole = (role: unknown): string => {
+    if (!role) return '';
+    if (typeof role === 'string') {
+      const normalized = role.trim().toLowerCase().replace(/[-\s]+/g, '_');
+      return normalized === 'superadmin' ? 'super_admin' : normalized;
+    }
+    if (typeof role === 'object') {
+      const roleObj = role as { name?: string; value?: string; slug?: string };
+      return normalizeRole(roleObj.value ?? roleObj.slug ?? roleObj.name ?? '');
+    }
+    return '';
+  };
+  const userRole = normalizeRole(user?.role);
+  const isAdmin = userRole === 'admin' || userRole === 'super_admin';
   const [loading, setLoading] = useState(true);
   const [companyProfile, setCompanyProfile] = useState<CompanyProfile | null>(null);
   const [logoFile, setLogoFile] = useState<File | null>(null);
