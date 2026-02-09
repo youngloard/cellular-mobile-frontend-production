@@ -15,13 +15,14 @@ const nextConfig = {
     // webpackBuildWorker: false,
   },
   env: {
-    NEXT_PUBLIC_API_URL: '/api',
+    NEXT_PUBLIC_API_URL: 'https://cellular-mobile-backened-production.up.railway.app/api',
   },
   async rewrites() {
+    const apiProxyTarget = process.env.API_PROXY_TARGET || 'https://cellular-mobile-backened-production.up.railway.app/api';
     return [
       {
         source: '/api/:path*',
-        destination: 'https://cellular-mobile-backened-production.up.railway.app/api/:path*',
+        destination: `${apiProxyTarget}/:path*`,
       },
     ]
   },
